@@ -4,14 +4,15 @@ import * as fs from 'fs';
 
 @Injectable()
 export class ProductoService {
-    
+
+    private listaProductos: Producto[];
+
     public getProductos(): any {
         let lista: Producto[] = this.loadProductos();
         return lista;
     }
 
     private loadProductos(): Producto[] {
-        let listaProductos: Producto[];
         let archivo = fs.readFileSync('productos.csv', 'utf8');
         let lineas = archivo.split('\n');
         const elementos = [];
@@ -20,29 +21,32 @@ export class ProductoService {
             let p = linea.split(',');
             elementos.push(p);
         }
-        listaProductos = [];
+        this.listaProductos = [];
         for (let i = 0; i < elementos.length; i++) {
             let producto = new Producto(elementos[i][0], parseInt(elementos[i][1]), elementos[i][2]);
-            listaProductos.push(producto);
+            this.listaProductos.push(producto);
         }
-        return listaProductos;
+        return this.listaProductos;
     }
 
 
     public getProducto(index: number): Producto {
-        // Más adelante agregar manejo de status code
         let lista: Producto[] = this.loadProductos();
         if (index < 0 || index >= lista.length)
             return null;
         return lista[index];
     }
 
+    public create(prod: any) {
+        const producto = new Producto(prod.producto_nombre, prod.precio, prod.marca);
+        if (producto.getNombre() && producto.getPrecio() && producto.getMarca()) {
+            fs.appendFileSync('productos.csv',`\n${producto.getNombre()},${producto.getPrecio()},${producto.getMarca()}`);
+            return "ok";
+        }
+        else {
+            return "parametros incorrectos";
+        }
 
-
-
-
+    }
 
 }
-
-
-

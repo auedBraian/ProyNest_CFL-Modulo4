@@ -7,18 +7,31 @@ let btnLimpiar = document.querySelector("#btnLimpiar");
 btnLimpiar.addEventListener("click", limpiarTabla);
 
 let compras = [];
-load();
-function agregar() {
+
+async function agregar() {
     let producto = document.querySelector('#producto').value;
     let precio = parseInt(document.querySelector('#precio').value);
     let marca = document.querySelector('#marca').value;
     let renglon = {
         "producto_nombre": producto,
         "precio": precio,
-        "marca":marca
+        "marca": marca
     }
-    compras.push(renglon);
-    mostrarTablaCompras();
+    let resp = await fetch("productos", {
+        "method": "POST",
+        "headers": { "Content-Type": "application/json" },
+        "body": JSON.stringify(renglon)
+    })
+    if (resp.ok) {
+        compras.push(renglon);
+        mostrarTablaCompras();
+    } else {
+        console.log("fallo el post");
+        let container = document.querySelector("#use-ajax");
+        container.innerHTML = "<h1> Fallo Post </h1>";
+    }
+
+
 }
 
 
@@ -38,9 +51,8 @@ function sumar() {
         "<p>Maximo: $" + max + "</p>"
 }
 
-function limpiarTabla(){
-    document.querySelector("#tblCompras").innerHTML="";
-
+function limpiarTabla() {
+    document.querySelector("#tblCompras").innerHTML = "";
 }
 
 function mostrarTablaCompras() {
@@ -54,7 +66,7 @@ function mostrarTablaCompras() {
                    </tr>
            `;
     }
-     document.querySelector("#tblCompras").innerHTML = html;
+    document.querySelector("#tblCompras").innerHTML = html;
 }
 
 
@@ -77,8 +89,6 @@ async function load() {
         container.innerHTML = "<h1>Connection error</h1>";
     };
 }
-
-
 
 load();
 

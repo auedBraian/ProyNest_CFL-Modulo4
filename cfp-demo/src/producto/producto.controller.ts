@@ -1,12 +1,12 @@
-import { Controller, Get, Param} from '@nestjs/common';
+import { Body, Controller, Get, Param, Post } from '@nestjs/common';
 import { ProductoService } from './producto.service';
-import {Producto } from './producto';
+import { Producto } from './producto';
 
 
 @Controller('productos')
 export class ProductoController {
-    constructor(private productoService: ProductoService) {}
-   
+    constructor(private productoService: ProductoService) { }
+
     @Get()
     public getProductos(): Producto[] {
         return this.productoService.getProductos()
@@ -15,6 +15,11 @@ export class ProductoController {
     @Get(':index')
     public getProducto(@Param('index') index): Producto {
         return this.productoService.getProducto(parseInt(index));
+    }
+
+    @Post()
+    create(@Body() prod: any): string {
+        return this.productoService.create(prod);
     }
 
 }
