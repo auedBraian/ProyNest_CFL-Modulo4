@@ -7,7 +7,7 @@ let btnLimpiar = document.querySelector("#btnLimpiar");
 btnLimpiar.addEventListener("click", limpiarTabla);
 
 let compras = [];
-
+load();
 function agregar() {
     let producto = document.querySelector('#producto').value;
     let precio = parseInt(document.querySelector('#precio').value);
@@ -78,12 +78,9 @@ async function load() {
     };
 }
 
+
+
 load();
-
-
-
-
-
 
 
 

@@ -4,9 +4,8 @@ import * as fs from 'fs';
 
 @Injectable()
 export class ProductoService {
-    private static readonly CANTIDAD_PRODUCTOS = 10;
-
-    public getProducto(): any {
+    
+    public getProductos(): any {
         let lista: Producto[] = this.loadProductos();
         return lista;
     }
@@ -28,6 +27,21 @@ export class ProductoService {
         }
         return listaProductos;
     }
+
+
+    public getProducto(index: number): Producto {
+        // Más adelante agregar manejo de status code
+        let lista: Producto[] = this.loadProductos();
+        if (index < 0 || index >= lista.length)
+            return null;
+        return lista[index];
+    }
+
+
+
+
+
+
 }
 
 
