@@ -1,10 +1,10 @@
-//Actualizando repositorio
 let btnAgregar = document.querySelector("#btnAgregar");
 btnAgregar.addEventListener("click", agregar);
 let btnTotal = document.querySelector("#btnTotal");
 btnTotal.addEventListener("click", sumar);
 let btnLimpiar = document.querySelector("#btnLimpiar");
 btnLimpiar.addEventListener("click", limpiarTabla);
+
 
 let compras = [];
 
@@ -38,11 +38,11 @@ async function agregar() {
 function sumar() {
     let total = 0;
     for (let i = 0; i < compras.length; i++) {
-        total += (compras[i].precio); //tengo q convertirlo a entero
+        total += (compras[i].precio); 
     }
-    let max = (compras[0].precio); //tengo q convertirlo a entero
+    let max = (compras[0].precio); 
     for (let i = 0; i < compras.length; i++) {
-        if (max < (compras[i].precio)) { //tengo q convertirlo a entero
+        if (max < (compras[i].precio)) { 
             max = (compras[i].precio);
         }
     }
@@ -58,17 +58,36 @@ function limpiarTabla() {
 function mostrarTablaCompras() {
     html = "";
     for (let i = 0; i < compras.length; i++) {
-        html += `
-               <tr>
-                   <td>${compras[i].producto_nombre}</td>
-                   <td>${compras[i].precio}</td>
-                   <td>${compras[i].marca}</td>
-                   </tr>
+        if (compras[i].precio == null) {
+
+        }
+        else {
+            html += `
+        <tr>
+        <td><input type=”text” value=${compras[i].producto_nombre} id="prod${i}"></td>
+        <td><input type=”number” value=${compras[i].precio} id="prec${i}"></td>
+        <td><input type=”text” value=${compras[i].marca} id="marc${i}"></td>
+        
+        <td><button class="btnUpdProd" pos=${i}>Actualizar</button></td>
+      
+        <td><button class="btn-delete-producto" pos=${i}>Borrar</button></td>
+        </tr>
            `;
+        }
     }
     document.querySelector("#tblCompras").innerHTML = html;
-}
 
+    let botonesBorrar = document.querySelectorAll(".btn-delete-producto");
+    botonesBorrar.forEach(e => {
+        e.addEventListener("click", btnBorrarClick);
+    });
+
+    let botonesActualizar = document.querySelectorAll(".btnUpdProd");
+    botonesActualizar.forEach(e => { e.addEventListener("click", btnActualizarClick); });
+
+
+
+}
 
 async function load() {
     let container = document.querySelector("#use-ajax");
@@ -77,7 +96,7 @@ async function load() {
         let response = await fetch('/productos');
         if (response.ok) {
             let t = await response.json();
-            compras = t; //[...compras, ...t];reemplazo arreglo global compras por el que viene de la api 
+            compras = t; //reemplazo arreglo global compras por el que viene de la api 
             mostrarTablaCompras(); //muestro las compras
             container.innerHTML = ""; //lo dejo vacio, sin mensaje
         }
@@ -88,6 +107,35 @@ async function load() {
     catch (response) {
         container.innerHTML = "<h1>Connection error</h1>";
     };
+}
+
+//Actualizo repositorio
+async function btnBorrarClick() {
+    let pos = this.getAttribute("pos");
+    let response = await fetch(`/productos/${pos}`, {
+        "method": "DELETE",
+        "headers": {
+            "Content-Type": "application/json"
+        }
+    })
+    load();
+}
+
+async function btnActualizarClick() {
+    let pos = this.getAttribute("pos");
+    let renglon = {
+        "producto_nombre": document.querySelector(`#prod${pos}`).value,
+        "precio": document.querySelector(`#prec${pos}`).value,
+        "marca": document.querySelector(`#marc${pos}`).value,
+    }
+    let response = await fetch(`/productos/${pos}`, {
+        "method": "PUT",
+        "headers": {
+            "Content-Type": "application/json"
+        },
+        "body": JSON.stringify(renglon)
+    });
+    load();
 }
 
 load();
