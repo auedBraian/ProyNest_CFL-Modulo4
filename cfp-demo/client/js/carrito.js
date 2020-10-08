@@ -77,17 +77,43 @@ function mostrarTablaCompras() {
     }
     document.querySelector("#tblCompras").innerHTML = html;
 
-    let botonesBorrar = document.querySelectorAll(".btn-delete-producto");
-    botonesBorrar.forEach(e => {
-        e.addEventListener("click", btnBorrarClick);
-    });
-
-    let botonesActualizar = document.querySelectorAll(".btnUpdProd");
-    botonesActualizar.forEach(e => { e.addEventListener("click", btnActualizarClick); });
-
-
-
+    addButtonBehavior(".btn-delete-producto", btnBorrarClick);
+    addButtonBehavior(".btnUpdProd", btnActualizarClick);
+    
 }
+
+
+function addButtonBehavior(btnClass, fn) {
+    let botones = document.querySelectorAll(btnClass);
+    botones.forEach(boton => {
+        boton.addEventListener("click", fn);
+    });
+}
+
+
+async function btnBorrarClick() {
+    let pos = this.getAttribute("pos");
+    let response = await fetch(`/productos/${pos}`, {
+        "method": "DELETE",
+        "headers": {
+            "Content-Type": "application/json"
+        }
+    })
+    load();
+}
+
+
+async function btnActualizarClick() {
+    let pos = this.getAttribute("pos");
+    let renglon = {
+        "producto_nombre": document.querySelector(`#prod${pos}`).value,
+        "precio": document.querySelector(`#prec${pos}`).value,
+        "marca": document.querySelector(`#marc${pos}`).value,
+    }
+    let response =llamarBack("PUT",`/productos/${pos}`, renglon);
+    load();
+}
+
 
 async function load() {
     let container = document.querySelector("#use-ajax");
@@ -109,34 +135,28 @@ async function load() {
     };
 }
 
-//Actualizo repositorio
-async function btnBorrarClick() {
-    let pos = this.getAttribute("pos");
-    let response = await fetch(`/productos/${pos}`, {
-        "method": "DELETE",
-        "headers": {
+
+
+
+async function llamarBack(verbo, path, body = null) {
+    let request = {
+        method: verbo,
+        headers: {
             "Content-Type": "application/json"
         }
-    })
-    load();
+    };
+    if (body) {
+        request.body = JSON.stringify(body);
+    }
+    return response = await fetch(path, request);
 }
 
-async function btnActualizarClick() {
-    let pos = this.getAttribute("pos");
-    let renglon = {
-        "producto_nombre": document.querySelector(`#prod${pos}`).value,
-        "precio": document.querySelector(`#prec${pos}`).value,
-        "marca": document.querySelector(`#marc${pos}`).value,
-    }
-    let response = await fetch(`/productos/${pos}`, {
-        "method": "PUT",
-        "headers": {
-            "Content-Type": "application/json"
-        },
-        "body": JSON.stringify(renglon)
-    });
-    load();
-}
+
+
+
+
+
+
 
 load();
 

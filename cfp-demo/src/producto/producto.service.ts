@@ -70,16 +70,26 @@ export class ProductoService {
     //actualizo archivo de texto con la lista de productos disponibles al momento de llamar a esta funcion
     public updateTxt() {
         let producto: Producto;
-       
-        //dejo en blanco mi archivo de texto
+        if(this.listaProductos.length>0){
+            fs.writeFileSync('productos.csv', this.getProductoLine(this.listaProductos[0]), 'utf8');
+        }
+        else{
+       //dejo en blanco mi archivo de texto
         fs.writeFileSync('productos.csv', '', 'utf8');
+        }
 
-        for (let i: number = 0; i <= this.listaProductos.length; i++) {
+        for (let i: number = 1; i <= this.listaProductos.length; i++) {
             //voy reemplazando el producto uno a uno con los de la lista
             producto = this.listaProductos[i];
-            fs.appendFileSync('productos.csv', `\n${producto.getNombre()},${producto.getPrecio()},${producto.getMarca()}`);
+            fs.appendFileSync('productos.csv', `\n${this.getProductoLine(this.listaProductos[i])}`);
         }
 
     }
 
+
+    private getProductoLine(producto: Producto): string {
+        return `${producto.getNombre()},${producto.getPrecio()},${producto.getMarca()}`;
+    }
+
+    
 }
